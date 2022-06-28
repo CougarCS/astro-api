@@ -1,6 +1,4 @@
-import winston, {
-	createLogger, config, transports, format,
-} from "winston";
+import winston, { createLogger, config, transports, format } from "winston";
 
 const options = {
 	file: {
@@ -22,7 +20,7 @@ const logger = createLogger({
 	levels: config.npm.levels,
 	format: winston.format.combine(
 		format.timestamp({ format: "MM-DD-YYYY hh:mm:ss" }),
-		winston.format.json(),
+		winston.format.json()
 	),
 	transports: [
 		new transports.File({

@@ -6,9 +6,8 @@ const stream: StreamOptions = {
 	write: (message) => logger.info(message),
 };
 
-const httpLogger = morgan(
-	":method :url :status - :response-time ms",
-	{ stream },
-);
+const httpLogger = morgan(":method :url :status - :response-time ms", {
+	stream,
+});
 
 export default httpLogger;
