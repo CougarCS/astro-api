@@ -14,7 +14,7 @@
 
 2. Build and run code!
 
-## Prevent Git from tracking config.ts
+## Prevent Git from Tracking config.ts
 
 1. Change the file you do not want to be tracked.
 
