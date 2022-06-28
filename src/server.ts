@@ -1,9 +1,8 @@
-import app from './app';
+import { API_PORT } from "./utils/config";
+import logger from "./utils/logger/logger";
 
-import logger from './utils/logger/logger';
+import app from "./app";
 
-const PORT = 5050;
-
-app.listen(PORT, () => {
-  logger.info(`API is listening at http://localhost:${PORT}`);
+app.listen(API_PORT, () => {
+	logger.info(`API is listening at http://localhost:${API_PORT}`);
 });
