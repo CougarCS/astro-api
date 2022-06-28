@@ -80,9 +80,9 @@ class SQLService {
 		return rows;
 	}
 
-	static async update() {}
+	// static async update() {}
 
-	static async delete() {}
+	// static async delete() {}
 }
 
 export default SQLService;

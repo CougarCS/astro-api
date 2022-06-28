@@ -1,9 +1,9 @@
 import logger from "../utils/logger/logger";
 
-import SQLService from "./sql-service";
+// import SQLService from "./sql-service";
 
 class MemberService {
-	static async isMember(student_id: string = "", email: string = "") {
+	static async isMember(student_id = "", email = "") {
 		logger.info(`student_id=${student_id} email=${email}`);
 
 		// Use SQLService to look up if student is a member.

@@ -20,6 +20,6 @@ app.use("/interface", interfaceRoute);
 app.use("/member", memberRoute);
 
 // Default to 404 if Endpoint/Method Not Recognized
-app.use((req, res, next) => res.status(404).json({ message: "Not found" }));
+app.use((req, res) => res.status(404).json({ message: "Not found" }));
 
 export default app;

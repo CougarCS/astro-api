@@ -7,7 +7,7 @@ interface SQLField {
 	Type: string;
 	Null: string;
 	Key: string;
-	Default: any;
+	Default: string | number;
 }
 
 interface SQLAttribute {

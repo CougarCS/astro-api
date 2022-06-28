@@ -1,14 +1,14 @@
-import morgan, { StreamOptions } from 'morgan';
+import morgan, { StreamOptions } from "morgan";
 
-import logger from './logger';
+import logger from "./logger";
 
 const stream: StreamOptions = {
-  write: (message) => logger.info(message),
+	write: (message) => logger.info(message),
 };
 
 const httpLogger = morgan(
-  ':method :url :status - :response-time ms',
-  { stream },
+	":method :url :status - :response-time ms",
+	{ stream },
 );
 
 export default httpLogger;
