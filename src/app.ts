@@ -6,6 +6,7 @@ import httpLogger from "./utils/logger/http-logger";
 import indexRoute from "./routes/index";
 import interfaceRoute from "./routes/interface";
 import memberRoute from "./routes/member";
+import searchRoute from "./routes/search";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(httpLogger);
 app.use("/", indexRoute);
 app.use("/interface", interfaceRoute);
 app.use("/member", memberRoute);
+app.use("/search", searchRoute);
 
 // Default to 404 if Endpoint/Method Not Recognized
 app.use((req, res) => res.status(404).json({ message: "Not found" }));
