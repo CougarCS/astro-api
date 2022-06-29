@@ -10,7 +10,6 @@ const router = Router();
 // Potential inputs:
 // - Target table ?
 // - Query text string
-// - Fields to include/exclude ?
 
 /* POST /search */
 
