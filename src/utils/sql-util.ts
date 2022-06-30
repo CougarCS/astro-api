@@ -1,26 +1,11 @@
-interface SQLTableRow {
-	[x: string]: string;
-}
-
-interface SQLField {
-	Field: string;
-	Type: string;
-	Null: string;
-	Key: string;
-	Default: string | number;
-}
-
-interface SQLAttribute {
-	field: string;
-	value: string | Array<string>;
-}
+import { Attribute } from "../models/sql-service.model";
 
 class SQLUtil {
 	static format(value: string) {
 		return value.replace("'", "''");
 	}
 
-	static attrToString(attrArr: SQLAttribute[]) {
+	static attrToStringArr(attrArr: Attribute[]) {
 		return attrArr.map((field) => {
 			if (typeof field.value === "string")
 				return `${field.field}='${SQLUtil.format(field.value)}'`;
@@ -31,4 +16,4 @@ class SQLUtil {
 	}
 }
 
-export { SQLTableRow, SQLField, SQLAttribute, SQLUtil };
+export default SQLUtil;
