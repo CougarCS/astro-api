@@ -5,7 +5,13 @@ import { DB_NAME, DB_CONFIG } from "../utils/config";
 import SQLUtil from "../utils/sql-util";
 import logger from "../utils/logger/logger";
 
-import { Field, SelectOptions } from "../models/sql-service.model";
+import {
+	CompoundAttribute,
+	Field,
+	SelectOptions,
+	OkResult,
+} from "../models/sql-service.model";
+import { OkPacket } from "mysql2";
 
 class SQLService {
 	static async query(
@@ -48,7 +54,7 @@ class SQLService {
 		logger.info(
 			`SQLService.select invoked! Table = ${table}, Fields = ${JSON.stringify(
 				fields
-			)} Constraints= ${JSON.stringify(constraints)}`
+			)} Constraints = ${JSON.stringify(constraints)}`
 		);
 
 		const selectParams = fields.length !== 0 ? fields.join(",") : "*";
@@ -63,7 +69,45 @@ class SQLService {
 		return rows;
 	}
 
-	// static async update() {}
+	static async update(
+		table: string,
+		updateOptions: CompoundAttribute[]
+	): Promise<OkResult> {
+		logger.info(
+			`SQLService.update invoked! Table = ${table}, updateOptions = ${JSON.stringify(
+				updateOptions
+			)}`
+		);
+
+		const pool = mysql.createPool(DB_CONFIG);
+		const connection = await pool.getConnection();
+
+		const summary = {
+			fieldCount: 0,
+			affectedRows: 0,
+			warningCount: 0,
+			changedRows: 0,
+		};
+
+		await Promise.all(
+			updateOptions.map(async (option) => {
+				const { attributes, constraints } = option;
+				const updateParams = SQLUtil.attrToStringArr(attributes).join(",");
+				const constraintParams =
+					SQLUtil.attrToStringArr(constraints).join(" AND ");
+				const SQL = `UPDATE ${table} SET ${updateParams} WHERE ${constraintParams};`;
+				logger.info(`SQLService.update: Executing SQL "${SQL}"`);
+				const [packet] = await connection.query(SQL);
+				const result = <OkPacket>packet;
+				summary.fieldCount += result.fieldCount;
+				summary.affectedRows += result.affectedRows;
+				summary.warningCount += result.warningCount;
+				summary.changedRows += result.changedRows;
+			})
+		);
+
+		return summary;
+	}
 
 	// static async delete() {}
 }
