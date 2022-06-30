@@ -25,12 +25,6 @@ router.get(
 
 		try {
 			const membership = await MemberService.isMember(student_id, email);
-			if (membership == "Yes") {
-				const dates = await MemberService.getMembershipDates(student_id, email);
-				const start_date = dates.start;
-				const end_date = dates.end;
-				return res.status(200).json({ membership, start_date, end_date });
-			}
 			return res.status(200).json({ membership });
 		} catch (err) {
 			logger.error("MemberService.isMember failed. Error =");
