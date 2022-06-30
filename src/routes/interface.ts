@@ -61,7 +61,7 @@ router.post(
 		const { table, fields = [], constraints = [] } = req.body;
 
 		try {
-			const result = await SQLService.select(table, fields, constraints);
+			const result = await SQLService.select(table, { fields, constraints });
 			return res.status(200).json({ result });
 		} catch (err) {
 			logger.error("SQLService.select failed. Error =", err);
