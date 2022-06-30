@@ -1,53 +1,36 @@
-import util from "util";
+import mysql from "mysql2/promise";
+import { RowDataPacket } from "mysql2";
 
-import mysql from "mysql2";
-
-import {
-	DB_SERVICE_URL,
-	DB_USER,
-	DB_PASSWORD,
-	DB_NAME,
-	DB_PORT,
-} from "../utils/config";
-import {
-	SQLTableRow,
-	SQLField,
-	SQLAttribute,
-	SQLUtil,
-} from "../utils/sql-utils";
+import { DB_NAME, DB_CONFIG } from "../utils/config";
+import SQLUtil from "../utils/sql-util";
 import logger from "../utils/logger/logger";
 
-const connection = mysql.createConnection({
-	host: DB_SERVICE_URL,
-	user: DB_USER,
-	password: DB_PASSWORD,
-	database: DB_NAME,
-	port: DB_PORT,
-});
-
-const query = util.promisify(connection.query).bind(connection);
+import { Field, SelectOptions } from "../models/sql-service.model";
 
 class SQLService {
-	static query(SQL: string, args: string[] = []) {
+	static async query(
+		SQL: string,
+		args: string[] = []
+	): Promise<RowDataPacket[]> {
 		logger.info("SQLService.query invoked! SQL =", SQL);
-		return query(SQL, args);
+		const connection = await mysql.createConnection(DB_CONFIG);
+		const [rows] = await connection.query(SQL, args);
+		return <RowDataPacket[]>rows;
 	}
 
-	static async tables() {
+	static async tables(): Promise<string[]> {
 		logger.info("SQLService.tables invoked!");
 		const SQL = "SHOW TABLES";
 		const output = await SQLService.query(SQL);
-		const tables = output.map(
-			(row: SQLTableRow) => row[`Tables_in_${DB_NAME}`]
-		);
+		const tables = output.map((row) => row[`Tables_in_${DB_NAME}`]);
 		return tables;
 	}
 
-	static async fields(table: string) {
+	static async fields(table: string): Promise<Field[]> {
 		logger.info("SQLService.fields invoked! Table = " + table);
 		const SQL = `SHOW COLUMNS FROM ${table};`;
-		const output = await SQLService.query(SQL);
-		const fields = output.map((row: SQLField) => ({
+		const rows = await SQLService.query(SQL);
+		const fields = rows.map((row) => ({
 			name: row.Field,
 			type: row.Type,
 			nullable: row.Null === "YES",
@@ -60,9 +43,8 @@ class SQLService {
 
 	static async select(
 		table: string,
-		fields: Array<string>,
-		constraints: SQLAttribute[]
-	) {
+		{ fields = [], constraints = [], compare = "AND" }: SelectOptions
+	): Promise<RowDataPacket[]> {
 		logger.info(
 			`SQLService.select invoked! Table = ${table}, Fields = ${JSON.stringify(
 				fields
@@ -70,9 +52,10 @@ class SQLService {
 		);
 
 		const selectParams = fields.length !== 0 ? fields.join(",") : "*";
+		const compareOption = ` ${compare} `;
 		const whereParams =
 			constraints.length !== 0
-				? ` WHERE ${SQLUtil.attrToString(constraints)}`
+				? ` WHERE ${SQLUtil.attrToStringArr(constraints).join(compareOption)}`
 				: "";
 
 		const SQL = `SELECT ${selectParams} FROM ${table}${whereParams};`;
