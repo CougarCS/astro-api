@@ -81,29 +81,31 @@ class SQLService {
 		return rows;
 	}
 
-	static async update(
-		table: string,
-		params: SQLCompoundAttribute[]
-	) {
+	static async update(table: string, params: SQLCompoundAttribute[]) {
 		logger.info(
 			`SQLService.update invoked! Table = ${table}, Params = ${JSON.stringify(
 				params
 			)}`
 		);
 
-		let results = { fieldCount: 0, affectedRows: 0, warningCount: 0, changedRows: 0 };
+		let results = {
+			fieldCount: 0,
+			affectedRows: 0,
+			warningStatus: 0,
+			changedRows: 0,
+		};
 		const SQLStatements: string[] = [];
 
-		params.forEach(async (compoundAttribute) => {
+		for await (const compoundAttribute of params) {
 			const fields = compoundAttribute.fields;
 			const constraints = compoundAttribute.constraints;
 
 			const setParams = SQLUtil.attrToString(fields);
-			const whereParams = 
+			const whereParams =
 				constraints.length !== 0
 					? ` WHERE ${SQLUtil.attrToString(constraints)}`
 					: "";
-				
+
 			const SQL = `UPDATE ${table} SET ${setParams}${whereParams}`;
 
 			SQLStatements.push(SQL);
@@ -112,12 +114,11 @@ class SQLService {
 			results = {
 				fieldCount: results.fieldCount + result.fieldCount,
 				affectedRows: results.affectedRows + result.affectedRows,
-				warningCount: results.warningCount + result.warningCount,
+				warningStatus: results.warningStatus + result.warningStatus,
 				changedRows: results.changedRows + result.changedRows,
 			};
-		});
-		
-		console.log(results);
+		}
+
 		return [results, SQLStatements];
 	}
 
