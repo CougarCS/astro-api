@@ -15,6 +15,11 @@ interface SQLAttribute {
 	value: string | Array<string>;
 }
 
+interface SQLCompoundAttribute {
+	fields: SQLAttribute[];
+	constraints: SQLAttribute[];
+}
+
 class SQLUtil {
 	static format(value: string) {
 		return value.replace("'", "''");
@@ -31,4 +36,4 @@ class SQLUtil {
 	}
 }
 
-export { SQLTableRow, SQLField, SQLAttribute, SQLUtil };
+export { SQLTableRow, SQLField, SQLAttribute, SQLCompoundAttribute, SQLUtil };

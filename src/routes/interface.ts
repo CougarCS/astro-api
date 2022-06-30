@@ -71,4 +71,33 @@ router.post(
 	}
 );
 
+/* POST /interface/update */
+
+router.put(
+	"/update",
+	body("table").isString().notEmpty(),
+	body("fields").isArray(),
+	body("fields.*.field").isString().notEmpty(),
+	body("fields.*.value").exists().notEmpty(),
+	body("constraints").isArray(),
+	body("constraints.*.field").isString().notEmpty(),
+	body("constraints.*.value").exists().notEmpty(),
+
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { table, fields = [], constraints = [] } = req.body;
+
+		try {
+			const result = await SQLService.update(table, [{ fields, constraints }]);
+			return res.status(200).json({ result });
+		} catch (err) {
+			logger.error("SQLService.select failed. Error =", err);
+		}
+	}
+);
+
 export default router;

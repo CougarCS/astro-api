@@ -13,6 +13,7 @@ import {
 	SQLTableRow,
 	SQLField,
 	SQLAttribute,
+	SQLCompoundAttribute,
 	SQLUtil,
 } from "../utils/sql-utils";
 import logger from "../utils/logger/logger";
@@ -66,7 +67,7 @@ class SQLService {
 		logger.info(
 			`SQLService.select invoked! Table = ${table}, Fields = ${JSON.stringify(
 				fields
-			)} Constraints= ${JSON.stringify(constraints)}`
+			)} Constraints = ${JSON.stringify(constraints)}`
 		);
 
 		const selectParams = fields.length !== 0 ? fields.join(",") : "*";
@@ -80,7 +81,45 @@ class SQLService {
 		return rows;
 	}
 
-	// static async update() {}
+	static async update(
+		table: string,
+		params: SQLCompoundAttribute[]
+	) {
+		logger.info(
+			`SQLService.update invoked! Table = ${table}, Params = ${JSON.stringify(
+				params
+			)}`
+		);
+
+		let results = { fieldCount: 0, affectedRows: 0, warningCount: 0, changedRows: 0 };
+		const SQLStatements: string[] = [];
+
+		params.forEach(async (compoundAttribute) => {
+			const fields = compoundAttribute.fields;
+			const constraints = compoundAttribute.constraints;
+
+			const setParams = SQLUtil.attrToString(fields);
+			const whereParams = 
+				constraints.length !== 0
+					? ` WHERE ${SQLUtil.attrToString(constraints)}`
+					: "";
+				
+			const SQL = `UPDATE ${table} SET ${setParams}${whereParams}`;
+
+			SQLStatements.push(SQL);
+
+			const result = await SQLService.query(SQL);
+			results = {
+				fieldCount: results.fieldCount + result.fieldCount,
+				affectedRows: results.affectedRows + result.affectedRows,
+				warningCount: results.warningCount + result.warningCount,
+				changedRows: results.changedRows + result.changedRows,
+			};
+		});
+		
+		console.log(results);
+		return [results, SQLStatements];
+	}
 
 	// static async delete() {}
 }
