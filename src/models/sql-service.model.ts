@@ -3,6 +3,11 @@ interface Attribute {
 	value: string | Array<string>;
 }
 
+interface CompoundAttribute {
+	attributes: Attribute[];
+	constraints: Attribute[];
+}
+
 interface Field {
 	name: string;
 	type: string;
@@ -18,4 +23,11 @@ interface SelectOptions {
 	compare?: "AND" | "OR";
 }
 
-export { Attribute, Field, SelectOptions };
+interface OkResult {
+	fieldCount: number;
+	affectedRows: number;
+	warningCount: number;
+	changedRows: number;
+}
+
+export { Attribute, CompoundAttribute, Field, SelectOptions, OkResult };
