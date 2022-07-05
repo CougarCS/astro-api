@@ -1,11 +1,11 @@
 import { Attribute } from "../models/sql-service.model";
 
 class SQLUtil {
-	static format(value: string) {
+	static format(value: string): string {
 		return value.replace("'", "''");
 	}
 
-	static attrToStringArr(attrArr: Attribute[]) {
+	static attrToStringArr(attrArr: Attribute[]): string[] {
 		return attrArr.map((field) => {
 			if (typeof field.value === "string")
 				return `${field.field}='${SQLUtil.format(field.value)}'`;
