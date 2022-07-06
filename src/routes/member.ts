@@ -40,20 +40,19 @@ router.get(
 
 router.post(
 	"/ledger",
-	body("fields").isArray().notEmpty(),
-	body("headers").isArray().optional(),
-	body("fields.*").isString().notEmpty(),
-	body("headers.*").isString().optional(),
+	body("options").isArray().notEmpty(),
+	body("options.*.field").isString().notEmpty(),
+	body("options.*.header").isString().optional(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		const { fields, headers } = req.body;
+		const { options } = req.body;
 
 		try {
-			await MemberService.writeLedgerFile(fields, headers);
+			await MemberService.writeLedgerFile(options);
 			return res.status(200).download(path.resolve(__dirname, "../services/tmp.csv"));
 		} catch (err) {
 			logger.error("MemberService.getLedgerFile failed. Error =");
