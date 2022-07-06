@@ -17,11 +17,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fast-csv/format": "^4.3.5",
     "@types/morgan": "^1.9.3",
     "@types/mysql": "^2.15.21",
     "cors": "^2.8.5",
     "express": "^4.18.1",
     "express-validator": "^6.14.2",
+    "fast-csv": "^4.3.6",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
