@@ -24,8 +24,8 @@ router.get(
 		const { student_id, email } = req.query;
 
 		try {
-			const result = await MemberService.isMember(student_id, email);
-			return res.status(200).json({ result });
+			const membership = await MemberService.isMember(student_id, email);
+			return res.status(200).json({ membership });
 		} catch (err) {
 			logger.error("MemberService.isMember failed. Error =");
 			logger.error(err);

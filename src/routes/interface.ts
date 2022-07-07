@@ -71,4 +71,33 @@ router.post(
 	}
 );
 
+/* PUT /interface/query */
+
+router.put(
+	"/query",
+	body("table").isString().notEmpty(),
+	body("updateOptions").isArray(),
+	body("updateOptions.*.attributes").isArray(),
+	body("updateOptions.*.attributes.*.field").isString().notEmpty(),
+	body("updateOptions.*.attributes.*.value").exists(),
+	body("updateOptions.*.constraints").isArray(),
+	body("updateOptions.*.constraints.*.field").isString().notEmpty(),
+	body("updateOptions.*.constraints.*.value").exists().notEmpty(),
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { table, updateOptions } = req.body;
+
+		try {
+			const result = await SQLService.update(table, updateOptions);
+			return res.status(200).json({ result });
+		} catch (err) {
+			logger.error("SQLService.update failed. Error =", err);
+		}
+	}
+);
+
 export default router;
