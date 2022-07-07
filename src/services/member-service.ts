@@ -3,7 +3,7 @@ import logger from "../utils/logger/logger";
 import * as path from "path";
 
 import SQLService from "./sql-service";
-import { LedgerOptions } from "src/models/member-service.model";
+import { LedgerOptions as LedgerOption } from "src/models/member-service.model";
 
 class MemberService {
 	static async isMember(uh_id = "", email = "") {
@@ -27,7 +27,7 @@ class MemberService {
 		};
 	}
 
-	static async writeLedgerFile(options: Array<LedgerOptions>) {
+	static async writeLedgerFile(options: Array<LedgerOption>) {
 		logger.info("MemberService.getLedgerFile invoked! Options = " + options);
 		
 		const fields = options.map((option) => { return option.field; });
@@ -36,7 +36,7 @@ class MemberService {
 		const ledger_data = await SQLService.select("contact", { fields: fields });
 		const rows = ledger_data.map(Object.values);
 
-		writeToPath(path.resolve(__dirname, "tmp.csv"), rows, { headers: headers })
+		writeToPath(path.resolve(__dirname, "member-ledger.csv"), rows, { headers: headers })
 			.on("error", (err) => console.error(err))
 			.on("finish", () => console.log("Done writing."));
 	}

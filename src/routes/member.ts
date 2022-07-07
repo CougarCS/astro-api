@@ -53,7 +53,7 @@ router.post(
 
 		try {
 			await MemberService.writeLedgerFile(options);
-			return res.status(200).download(path.resolve(__dirname, "../services/tmp.csv"));
+			return res.status(200).download(path.resolve(__dirname, "../services/member-ledger.csv"));
 		} catch (err) {
 			logger.error("MemberService.getLedgerFile failed. Error =");
 			logger.error(err);
