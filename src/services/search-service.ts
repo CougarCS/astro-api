@@ -5,42 +5,40 @@ import SQLService from "./sql-service";
 class SearchService {
 	static async search(
 		table: string,
-		search: string,
+		key: string,
 		columns: string[]
 	): Promise<RowDataPacket[]> {
-		logger.info("Search");
-		const matchParams = ` WHERE MATCH (${columns})`;
-		const searchParams = ` AGAINST ('${search}' IN NATURAL LANGUAGE MODE)`;
-		const SQL = `SELECT * FROM ${table}${matchParams}${searchParams};`;
+		logger.info(
+			`SearchService invoked! Table = ${table}, Key = ${key}, Columns = ${columns}`
+		);
 
-		console.log(SQL);
+		const whereParams = ` WHERE MATCH (${columns})`;
+		const againstParams = ` AGAINST ('${key}' IN NATURAL LANGUAGE MODE)`;
+
+		const SQL = `SELECT * FROM ${table}${whereParams}${againstParams};`;
 
 		const rows = await SQLService.query(SQL);
 		return rows;
 	}
 
-	static async searchContacts() {
-		logger.info("Search Contacts");
+	static async searchContacts(key: string): Promise<RowDataPacket[]> {
+		logger.info(`SearchService.searchContacts invoked! Key = ${key}`);
+
+		const rows = SearchService.search("contact", key, [
+			"contact_id",
+			"uh_id",
+			"email",
+			"first_name",
+			"last_name",
+			"phone_number",
+		]);
+		return rows;
 	}
 
-	static async searchEvents(search: string): Promise<RowDataPacket[]> {
-		logger.info(`SearchService.searchEvents invoked! Search = ${search}`);
+	static async searchEvents(key: string): Promise<RowDataPacket[]> {
+		logger.info(`SearchService.searchEvents invoked! Key = ${key}`);
 
-		// const matchParams = " WHERE MATCH (event_id, title, description)";
-		// const againstParams = ` AGAINST ('${search}' IN NATURAL LANGUAGE MODE)`;
-		// const SQL = `SELECT * FROM event${matchParams}${againstParams};`;
-
-		// TODO: Add full text index
-		// ALTER TABLE event
-		// ADD FULLTEXT(event_id, title, description)
-		// Adjust to use a more broad search() instead of a hard coded search
-		// const rows = await SQLService.query(SQL);
-
-		const rows = SearchService.search("event", search, [
-			"event_id",
-			"title",
-			"description",
-		]);
+		const rows = SearchService.search("event", key, ["title", "description"]);
 		return rows;
 	}
 }
