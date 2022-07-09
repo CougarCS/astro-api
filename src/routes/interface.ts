@@ -100,4 +100,30 @@ router.put(
 	}
 );
 
+router.post(
+    "/delete",
+    body("table").isString(),
+    body("constraints").optional().isArray(),
+    body("constraints.*.field").isString(),
+    body("constraints.*.value").exists(),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            res.status(400).json({ errors: errors.array() });
+        }
+
+        const { table, constraints = [] }  = req.body;
+
+        try {
+            const result = await SQLService.delete(table, { constraints });
+        	return res.status(200).json({ message: `Affected rows: ${result.affectedRows}, Changed rows: ${result.changedRows == undefined ? "0" : result.changedRows}, Field count: ${result.fieldCount}, Warning count: ${result.warningCount == undefined ? "0" : result.warningCount}` });
+        }
+        catch (err) {
+            logger.error("SQLService.delete failed. Error =", err);
+        	return res.status(400).json({ message: "Unable to load resource" });
+        }
+    }
+);
+
+
 export default router;

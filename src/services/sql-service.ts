@@ -109,6 +109,26 @@ class SQLService {
 		return summary;
 	}
 
+	static async delete(
+    	table: string,
+        { constraints = [] }: SelectOptions
+    ): Promise<OkResult> {
+        logger.info(
+            `SQLService.delete invoked! Table = ${table}, Constraints = ${JSON.stringify(constraints)}`
+        );
+
+        const whereParams =
+            constraints.length !== 0
+                ? ` WHERE ${SQLUtil.attrToStringArr(constraints).join('OR')}`
+                : '';
+
+        const SQL = `DELETE FROM ${table}` + whereParams;
+		const connection = await mysql.createConnection(DB_CONFIG);
+		const [rows] = await connection.query(SQL);
+		return <OkResult>rows;
+    }
+
+
 	// static async delete() {}
 }
 
