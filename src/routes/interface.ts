@@ -21,9 +21,9 @@ router.get("/tables", async (_, res) => {
 	return res.status(500).json({ message: "Unable to load resource" });
 });
 
-/* POST /interface/fields */
+/* GET /interface/fields */
 
-router.post("/fields", body("table").isString(), async (req, res) => {
+router.get("/fields", body("table").isString().notEmpty(), async (req, res) => {
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		return res.status(400).json({ errors: errors.array() });
@@ -42,16 +42,16 @@ router.post("/fields", body("table").isString(), async (req, res) => {
 	return res.status(500).json({ message: "Unable to load resource" });
 });
 
-/* POST /interface/query */
+/* GET /interface/query */
 
-router.post(
+router.get(
 	"/query",
-	body("table").isString(),
+	body("table").isString().notEmpty(),
 	body("fields").optional().isArray(),
-	body("fields.*").isString(),
+	body("fields.*").isString().notEmpty(),
 	body("constraints").optional().isArray(),
-	body("constraints.*.field").isString(),
-	body("constraints.*.value").exists(),
+	body("constraints.*.field").isString().notEmpty(),
+	body("constraints.*.value").exists().notEmpty(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -72,16 +72,44 @@ router.post(
 	}
 );
 
-/* PUT /interface/query */
+/* POST /interface/data */
+
+router.post(
+	"/data",
+	body("table").isString().notEmpty(),
+	body("fields").isArray({ min: 1 }),
+	body("fields.*.field").isString().notEmpty(),
+	body("fields.*.value").exists().notEmpty(),
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { table, fields } = req.body;
+
+		try {
+			const result = await SQLService.insert(table, fields);
+			return res.status(200).json({ result });
+		} catch (err) {
+			logger.error("SQLService.insert failed. Error =");
+			logger.error(err);
+		}
+
+		return res.status(500).json({ message: "Unable to load resource" });
+	}
+);
+
+/* PUT /interface/data */
 
 router.put(
-	"/query",
+	"/data",
 	body("table").isString().notEmpty(),
-	body("updateOptions").isArray(),
-	body("updateOptions.*.attributes").isArray(),
+	body("updateOptions").isArray({ min: 1 }),
+	body("updateOptions.*.attributes").isArray({ min: 1 }),
 	body("updateOptions.*.attributes.*.field").isString().notEmpty(),
-	body("updateOptions.*.attributes.*.value").exists(),
-	body("updateOptions.*.constraints").isArray(),
+	body("updateOptions.*.attributes.*.value").exists().notEmpty(),
+	body("updateOptions.*.constraints").isArray({ min: 1 }),
 	body("updateOptions.*.constraints.*.field").isString().notEmpty(),
 	body("updateOptions.*.constraints.*.value").exists().notEmpty(),
 	async (req, res) => {
@@ -104,12 +132,14 @@ router.put(
 	}
 );
 
+/* DELETE /interface/data */
+
 router.delete(
 	"/data",
-	body("table").isString(),
+	body("table").isString().notEmpty(),
 	body("constraints").isArray({ min: 1 }),
-	body("constraints.*.field").isString(),
-	body("constraints.*.value").exists(),
+	body("constraints.*.field").isString().notEmpty(),
+	body("constraints.*.value").exists().notEmpty(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {

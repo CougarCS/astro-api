@@ -69,6 +69,16 @@ class SQLService {
 		return rows;
 	}
 
+	static async insert(table: string, fields: Attribute[]): Promise<OkResult> {
+		logger.info(
+			`SQLService.insert invoked! Table = ${table}, Fields = ${JSON.stringify(
+				fields
+			)}`
+		);
+
+		return undefined;
+	}
+
 	static async update(
 		table: string,
 		updateOptions: CompoundAttribute[]
