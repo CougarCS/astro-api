@@ -7,15 +7,15 @@ import SearchService from "../services/search-service";
 
 const router = Router();
 
-/* POST /search */
+/* GET /search */
 
-router.post("/", (req, res) => {
+router.get("/", (req, res) => {
 	res.status(200).json({ message: "Project ASTRO API 🚀" });
 });
 
-/* POST /search/contacts */
+/* GET /search/contacts */
 
-router.post(
+router.get(
 	"/contacts",
 	query("contact").notEmpty().isString(),
 	async (req, res) => {
@@ -37,9 +37,9 @@ router.post(
 	}
 );
 
-/* POST /search/events */
+/* GET /search/events */
 
-router.post(
+router.get(
 	"/events",
 	query("event").notEmpty().isString(),
 	async (req, res) => {
