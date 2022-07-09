@@ -14,7 +14,6 @@ class SearchService {
 
 		const whereParams = ` WHERE MATCH (${columns})`;
 		const againstParams = ` AGAINST ('${key}' IN NATURAL LANGUAGE MODE)`;
-
 		const SQL = `SELECT * FROM ${table}${whereParams}${againstParams};`;
 
 		const rows = await SQLService.query(SQL);
@@ -23,7 +22,6 @@ class SearchService {
 
 	static async searchContacts(key: string): Promise<RowDataPacket[]> {
 		logger.info(`SearchService.searchContacts invoked! Key = ${key}`);
-
 		const rows = SearchService.search("contact", key, [
 			"contact_id",
 			"uh_id",

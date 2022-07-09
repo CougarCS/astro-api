@@ -7,27 +7,21 @@ import SearchService from "../services/search-service";
 
 const router = Router();
 
-/* GET /search */
-
-router.get("/", (req, res) => {
-	res.status(200).json({ message: "Project ASTRO API 🚀" });
-});
-
-/* GET /search/contacts */
+/* GET /search/contacts?query= */
 
 router.get(
 	"/contacts",
-	query("contact").notEmpty().isString(),
+	query("query").isString().notEmpty(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		const contact = req.query.contact;
+		const { query } = req.query;
 
 		try {
-			const result = await SearchService.searchContacts(contact);
+			const result = await SearchService.searchContacts(query);
 			return res.status(200).json({ result });
 		} catch (err) {
 			logger.error("SearchService.searchContacts failed. Error =", err);
@@ -37,22 +31,21 @@ router.get(
 	}
 );
 
-/* GET /search/events */
+/* GET /search/events?query= */
 
 router.get(
 	"/events",
-	query("event").notEmpty().isString(),
+	query("query").isString().notEmpty(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		const event = req.query.event;
-		console.log(event);
+		const { query } = req.query;
 
 		try {
-			const result = await SearchService.searchEvents(event);
+			const result = await SearchService.searchEvents(query);
 			return res.status(200).json({ result });
 		} catch (err) {
 			logger.error("SearchService.searchEvents failed. Error =", err);
