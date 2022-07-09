@@ -30,4 +30,4 @@ interface OkResult {
 	changedRows: number;
 }
 
-export { Attribute, CompoundAttribute, Field, SelectOptions, OkResult };
+export { Attribute, CompoundAttribute, Field, OkResult, SelectOptions };

@@ -1,17 +1,17 @@
 import mysql from "mysql2/promise";
-import { RowDataPacket } from "mysql2";
+import { RowDataPacket, OkPacket } from "mysql2";
 
 import { DB_NAME, DB_CONFIG } from "../utils/config";
 import SQLUtil from "../utils/sql-util";
 import logger from "../utils/logger/logger";
 
 import {
+	Attribute,
 	CompoundAttribute,
 	Field,
-	SelectOptions,
 	OkResult,
+	SelectOptions,
 } from "../models/sql-service.model";
-import { OkPacket } from "mysql2";
 
 class SQLService {
 	static async query(
@@ -110,26 +110,25 @@ class SQLService {
 	}
 
 	static async delete(
-    	table: string,
-        { constraints = [] }: SelectOptions
-    ): Promise<OkResult> {
-        logger.info(
-            `SQLService.delete invoked! Table = ${table}, Constraints = ${JSON.stringify(constraints)}`
-        );
+		table: string,
+		constraints: Attribute[]
+	): Promise<OkResult> {
+		logger.info(
+			`SQLService.delete invoked! Table = ${table}, Constraints = ${JSON.stringify(
+				constraints
+			)}`
+		);
 
-        const whereParams =
-            constraints.length !== 0
-                ? ` WHERE ${SQLUtil.attrToStringArr(constraints).join('OR')}`
-                : '';
+		const whereParams =
+			constraints.length !== 0
+				? ` WHERE ${SQLUtil.attrToStringArr(constraints).join("OR")}`
+				: "";
+		const SQL = `DELETE FROM ${table}${whereParams}`;
 
-        const SQL = `DELETE FROM ${table}` + whereParams;
 		const connection = await mysql.createConnection(DB_CONFIG);
-		const [rows] = await connection.query(SQL);
-		return <OkResult>rows;
-    }
-
-
-	// static async delete() {}
+		const [packet] = await connection.query(SQL);
+		return <OkResult>packet;
+	}
 }
 
 export default SQLService;

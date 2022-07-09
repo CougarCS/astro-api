@@ -9,7 +9,7 @@ const router = Router();
 
 /* GET /interface/tables */
 
-router.get("/tables", async (req, res) => {
+router.get("/tables", async (_, res) => {
 	try {
 		const tables = await SQLService.tables();
 		return res.status(200).json({ tables });
@@ -64,7 +64,8 @@ router.post(
 			const result = await SQLService.select(table, { fields, constraints });
 			return res.status(200).json({ result });
 		} catch (err) {
-			logger.error("SQLService.select failed. Error =", err);
+			logger.error("SQLService.select failed. Error =");
+			logger.error(err);
 		}
 
 		return res.status(500).json({ message: "Unable to load resource" });
@@ -95,35 +96,38 @@ router.put(
 			const result = await SQLService.update(table, updateOptions);
 			return res.status(200).json({ result });
 		} catch (err) {
-			logger.error("SQLService.update failed. Error =", err);
+			logger.error("SQLService.update failed. Error =");
+			logger.error(err);
 		}
+
+		return res.status(500).json({ message: "Unable to load resource" });
 	}
 );
 
-router.post(
-    "/delete",
-    body("table").isString(),
-    body("constraints").optional().isArray(),
-    body("constraints.*.field").isString(),
-    body("constraints.*.value").exists(),
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.status(400).json({ errors: errors.array() });
-        }
+router.delete(
+	"/data",
+	body("table").isString(),
+	body("constraints").isArray({ min: 1 }),
+	body("constraints.*.field").isString(),
+	body("constraints.*.value").exists(),
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
 
-        const { table, constraints = [] }  = req.body;
+		const { table, constraints } = req.body;
 
-        try {
-            const result = await SQLService.delete(table, { constraints });
-        	return res.status(200).json({ message: `Affected rows: ${result.affectedRows}, Changed rows: ${result.changedRows == undefined ? "0" : result.changedRows}, Field count: ${result.fieldCount}, Warning count: ${result.warningCount == undefined ? "0" : result.warningCount}` });
-        }
-        catch (err) {
-            logger.error("SQLService.delete failed. Error =", err);
-        	return res.status(400).json({ message: "Unable to load resource" });
-        }
-    }
+		try {
+			const result = await SQLService.delete(table, constraints);
+			return res.status(200).json({ result });
+		} catch (err) {
+			logger.error("SQLService.delete failed. Error =");
+			logger.error(err);
+		}
+
+		return res.status(500).json({ message: "Unable to load resource" });
+	}
 );
-
 
 export default router;
