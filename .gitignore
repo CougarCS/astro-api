@@ -1,4 +1,19 @@
-node_modules
-dist
+# Logs 
 logs
+*.logs
+
+# Dependency directories
+node_modules/
+
+# TS Build files
+dist/
+
+# API keys and secrets
+.env
 src/utils/config.ts
+
+# MacOS Metadata
+.DS_Store
+
+# Windows Metadata
+Thumbs.db
