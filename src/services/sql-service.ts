@@ -69,14 +69,24 @@ class SQLService {
 		return rows;
 	}
 
-	static async insert(table: string, fields: Attribute[]): Promise<OkResult> {
+	static async insert(table: string, values: Attribute[]): Promise<OkResult> {
 		logger.info(
 			`SQLService.insert invoked! Table = ${table}, Fields = ${JSON.stringify(
-				fields
+				values
 			)}`
 		);
 
-		return undefined;
+		const SQL = `INSERT INTO ${table}(${
+			//fields.map((value) => value = value.substring(0, value.indexOf("=")))
+			values.map((value) => value['field'])
+		}) VALUES(${
+			//fields.map((value) => value = value.substring(value.indexOf("=") + 1))
+			values.map((value) => "'" + value['value'] + "'")
+		});`;
+
+		const connection = await mysql.createConnection(DB_CONFIG);
+		const [packet] = await connection.query(SQL);
+		return <OkResult>packet;
 	}
 
 	static async update(

@@ -77,19 +77,19 @@ router.get(
 router.post(
 	"/data",
 	body("table").isString().notEmpty(),
-	body("fields").isArray({ min: 1 }),
-	body("fields.*.field").isString().notEmpty(),
-	body("fields.*.value").exists().notEmpty(),
+	body("values").isArray({ min: 1 }),
+	body("values.*.field").isString().notEmpty(),
+	body("values.*.value").exists().notEmpty(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
 			return res.status(400).json({ errors: errors.array() });
 		}
 
-		const { table, fields } = req.body;
+		const { table, values } = req.body;
 
 		try {
-			const result = await SQLService.insert(table, fields);
+			const result = await SQLService.insert(table, values);
 			return res.status(200).json({ result });
 		} catch (err) {
 			logger.error("SQLService.insert failed. Error =");
@@ -159,5 +159,6 @@ router.delete(
 		return res.status(500).json({ message: "Unable to load resource" });
 	}
 );
+
 
 export default router;
