@@ -4,7 +4,6 @@ import cors from "cors";
 import httpLogger from "./utils/logger/http-logger";
 
 import indexRoute from "./routes/index";
-import interfaceRoute from "./routes/interface";
 import memberRoute from "./routes/member";
 import searchRoute from "./routes/search";
 
@@ -17,7 +16,6 @@ app.use(httpLogger);
 
 // Routes
 app.use("/", indexRoute);
-app.use("/interface", interfaceRoute);
 app.use("/member", memberRoute);
 app.use("/search", searchRoute);
 

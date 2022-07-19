@@ -1,27 +1,43 @@
-// import { type } from "os";
-import logger from "../utils/logger/logger";
+import { PrismaClient } from "@prisma/client";
 
-import SQLService from "./sql-service";
+import logger from "../utils/logger/logger";
 
 class MemberService {
 	static async isMember(uh_id = "", email = "") {
-		logger.info(`uh_id=${uh_id} email=${email}`);
-		const constraints = [];
-		if (email !== "") constraints.push({ field: "email", value: email });
-		if (uh_id !== "") constraints.push({ field: "uh_id", value: uh_id });
-		const result = await SQLService.select("member", {
-			fields: ["start_date", "end_date"],
-			constraints,
-			compare: "AND",
+		logger.info(
+			`MemberService.isMember invoked! uh_id=${uh_id} email=${email}`
+		);
+
+		const prisma = new PrismaClient();
+
+		const contact = await prisma.contact.findFirst({
+			where: {
+				OR: [{ uh_id }, { email }],
+			},
 		});
-		let status = false;
-		if (result.length === 0) return { status };
-		if (result[0].start_date < new Date() && new Date() < result[0].end_date)
-			status = true;
+
+		if (!contact) return { status: false };
+
+		const membership = await prisma.membership.findFirst({
+			where: { contact_id: contact.contact_id },
+			orderBy: { start_date: "desc" },
+		});
+
+		if (!membership)
+			return {
+				status: false,
+				first_name: contact.first_name,
+				last_name: contact.last_name,
+			};
+
+		const status = new Date(membership.end_date) > new Date();
+
 		return {
 			status,
-			start_date: result[0].start_date,
-			end_date: result[0].end_date,
+			first_name: contact.first_name,
+			last_name: contact.last_name,
+			start_date: membership.start_date,
+			end_date: membership.end_date,
 		};
 	}
 }

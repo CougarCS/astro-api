@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model contact {
+  contact_id               String                     @id @db.VarChar(36)
+  uh_id                    String?                    @db.VarChar(7)
+  email                    String                     @db.VarChar(128)
+  first_name               String                     @db.VarChar(64)
+  last_name                String?                    @db.VarChar(64)
+  phone_number             String?                    @db.VarChar(32)
+  shirt_size_id            String?                    @db.VarChar(16)
+  timestamp                DateTime                   @default(now()) @db.DateTime(0)
+  shirt_size               shirt_size?                @relation(fields: [shirt_size_id], references: [shirt_size_id], onDelete: NoAction, onUpdate: NoAction, map: "contact_ibfk_1")
+  event_attendance         event_attendance[]
+  member_point_transaction member_point_transaction[]
+  membership               membership[]
+
+  @@index([shirt_size_id], map: "shirt_size_id")
+}
+
+model event {
+  event_id         String             @id @db.VarChar(36)
+  title            String             @db.VarChar(128)
+  description      String?            @db.Text
+  datetime         DateTime           @db.DateTime(0)
+  duration         Float?             @db.Float
+  point_value      Int                @default(0)
+  event_attendance event_attendance[]
+}
+
+model event_attendance {
+  event_attendance_id String   @id @db.VarChar(36)
+  event_id            String   @db.VarChar(36)
+  contact_id          String?  @db.VarChar(36)
+  timestamp           DateTime @default(now()) @db.DateTime(0)
+  swag                Boolean  @default(false)
+  contact             contact? @relation(fields: [contact_id], references: [contact_id], onDelete: NoAction, onUpdate: NoAction, map: "event_attendance_ibfk_2")
+  event               event    @relation(fields: [event_id], references: [event_id], onDelete: NoAction, onUpdate: NoAction, map: "event_attendance_ibfk_1")
+
+  @@index([contact_id], map: "contact_id")
+  @@index([event_id], map: "event_id")
+}
+
+model member_point_transaction {
+  member_point_transaction_id        String                          @id @db.VarChar(36)
+  member_point_transaction_reason_id String                          @db.VarChar(16)
+  contact_id                         String                          @db.VarChar(36)
+  point_value                        Int
+  timestamp                          DateTime                        @default(now()) @db.DateTime(0)
+  contact                            contact                         @relation(fields: [contact_id], references: [contact_id], onDelete: NoAction, onUpdate: NoAction, map: "member_point_transaction_ibfk_1")
+  member_point_transaction_reason    member_point_transaction_reason @relation(fields: [member_point_transaction_reason_id], references: [member_point_transaction_reason_id], onDelete: NoAction, onUpdate: NoAction, map: "member_point_transaction_ibfk_2")
+
+  @@index([contact_id], map: "contact_id")
+  @@index([member_point_transaction_reason_id], map: "member_point_transaction_reason_id")
+}
+
+model member_point_transaction_reason {
+  member_point_transaction_reason_id String                     @id @db.VarChar(16)
+  message                            String                     @db.VarChar(128)
+  member_point_transaction           member_point_transaction[]
+}
+
+model membership {
+  membership_id      String          @id @db.VarChar(36)
+  contact_id         String          @db.VarChar(36)
+  start_date         DateTime        @db.Date
+  end_date           DateTime        @db.Date
+  membership_code_id String          @db.VarChar(16)
+  contact            contact         @relation(fields: [contact_id], references: [contact_id], onDelete: NoAction, onUpdate: NoAction, map: "membership_ibfk_1")
+  membership_code    membership_code @relation(fields: [membership_code_id], references: [membership_code_id], onDelete: NoAction, onUpdate: NoAction, map: "membership_ibfk_2")
+
+  @@index([contact_id], map: "contact_id")
+  @@index([membership_code_id], map: "membership_code_id")
+}
+
+model membership_code {
+  membership_code_id String       @id @db.VarChar(16)
+  message            String       @db.VarChar(64)
+  membership         membership[]
+}
+
+model shirt_size {
+  shirt_size_id String    @id @db.VarChar(16)
+  message       String    @db.VarChar(64)
+  contact       contact[]
+}
