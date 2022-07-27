@@ -55,7 +55,7 @@ class MemberService {
 		const prisma = new PrismaClient();
 		const UUID = uuidv4();
 
-		await prisma.membership.create({
+		const membership = await prisma.membership.create({
 			data: {
 				membership_id: UUID,
 				contact_id: contact_id,
@@ -64,6 +64,8 @@ class MemberService {
 				membership_code_id: membership_code_id,
 			},
 		});
+
+		return membership;
 	}
 }
 
