@@ -46,10 +46,10 @@ class MemberService {
 		contact_id: string,
 		start_date: Date,
 		end_date: Date,
-		membership_code: string
+		membership_code_id: string
 	) {
 		logger.info(
-			`MemberService.createMember invoked! contact_id=${contact_id} start_date=${start_date} end_date=${end_date} membership_code:${membership_code}`
+			`MemberService.createMember invoked! contact_id=${contact_id} start_date=${start_date} end_date=${end_date} membership_code:${membership_code_id}`
 		);
 
 		const prisma = new PrismaClient();
@@ -61,7 +61,7 @@ class MemberService {
 				contact_id: contact_id,
 				start_date: start_date,
 				end_date: end_date,
-				membership_code_id: membership_code,
+				membership_code_id: membership_code_id,
 			},
 		});
 	}
