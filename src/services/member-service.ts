@@ -40,6 +40,13 @@ class MemberService {
 			end_date: membership.end_date,
 		};
 	}
+
+	static async getMembers() {
+		logger.info("MemberService.getMembers invoked!");
+		const prisma = new PrismaClient();
+		const members = prisma.contact.findMany();
+		return members;
+	}
 }
 
 export default MemberService;
