@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { query, validationResult } from "express-validator";
+import { body, query, validationResult } from "express-validator";
 
 import MemberService from "../services/member-service";
 
@@ -29,6 +29,38 @@ router.get(
 		} catch (err) {
 			logger.error("MemberService.isMember failed. Error =");
 			logger.error(err);
+		}
+
+		return res.status(500).json({ message: "Unable to load resource" });
+	}
+);
+
+router.post(
+	"/create",
+	body("contact_id").isString().notEmpty(),
+	body("start_date").isString().notEmpty(),
+	body("end_date").isString().notEmpty(),
+	body("membership_code_id").isString().notEmpty(),
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { contact_id, start_date, end_date, membership_code_id } = req.body;
+		const startDateParsed = new Date(start_date);
+		const endDateParsed = new Date(end_date);
+
+		try {
+			const result = await MemberService.createMember(
+				contact_id,
+				startDateParsed,
+				endDateParsed,
+				membership_code_id
+			);
+			return res.status(200).json({ result });
+		} catch (err) {
+			logger.error("MemberService.createMember failed. Error=", err);
 		}
 
 		return res.status(500).json({ message: "Unable to load resource" });
