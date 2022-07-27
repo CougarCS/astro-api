@@ -48,14 +48,12 @@ router.post(
 		}
 
 		const { contact_id, start_date, end_date, membership_code_id } = req.body;
-		const startDateParsed = new Date(start_date);
-		const endDateParsed = new Date(end_date);
 
 		try {
 			const result = await MemberService.createMember(
 				contact_id,
-				startDateParsed,
-				endDateParsed,
+				start_date,
+				end_date,
 				membership_code_id
 			);
 			return res.status(200).json({ result });
