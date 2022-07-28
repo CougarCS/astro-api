@@ -35,6 +35,8 @@ router.get(
 	}
 );
 
+/* POST /member/create */
+
 router.post(
 	"/create",
 	body("contact_id").isString().notEmpty(),
@@ -58,7 +60,25 @@ router.post(
 			);
 			return res.status(200).json({ result });
 		} catch (err) {
-			logger.error("MemberService.createMember failed. Error=", err);
+			logger.error("MemberService.createMember failed. Error=");
+      logger.error(err);
+    }
+
+		return res.status(500).json({ message: "Unable to load resource" });
+	}
+);
+
+/* GET /member/all */
+
+router.get(
+	"/all",
+	async (req, res) => {
+		try {
+			const members = await MemberService.getMembers();
+			return res.status(200).json({ members });
+		} catch (err) {
+			logger.error("MemberService.getMembers failed. Error =");
+			logger.error(err);
 		}
 
 		return res.status(500).json({ message: "Unable to load resource" });
