@@ -61,8 +61,8 @@ router.post(
 			return res.status(200).json({ result });
 		} catch (err) {
 			logger.error("MemberService.createMember failed. Error=");
-      logger.error(err);
-    }
+			logger.error(err);
+		}
 
 		return res.status(500).json({ message: "Unable to load resource" });
 	}
