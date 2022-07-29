@@ -70,14 +70,37 @@ router.post(
 
 /* GET /member/all */
 
-router.get(
-	"/all",
+router.get("/all", async (req, res) => {
+	try {
+		const members = await MemberService.getMembers();
+		return res.status(200).json({ members });
+	} catch (err) {
+		logger.error("MemberService.getMembers failed. Error =");
+		logger.error(err);
+	}
+
+	return res.status(500).json({ message: "Unable to load resource" });
+});
+
+/* PATCH /member/edit */
+
+router.patch(
+	"/edit",
+	body("membership_id").isString().isLength({ min: 36, max: 36 }),
+	body("updates").exists(),
 	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { membership_id, updates } = req.body;
+
 		try {
-			const members = await MemberService.getMembers();
-			return res.status(200).json({ members });
+			const result = await MemberService.updateMember(membership_id, updates);
+			return res.status(200).json({ result });
 		} catch (err) {
-			logger.error("MemberService.getMembers failed. Error =");
+			logger.error("MemberService.updateMembers failed. Error =");
 			logger.error(err);
 		}
 
