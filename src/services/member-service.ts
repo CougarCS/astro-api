@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/prisma";
 import { v4 as uuidv4 } from "uuid";
 
 import logger from "../utils/logger/logger";
@@ -8,8 +8,6 @@ class MemberService {
 		logger.info(
 			`MemberService.isMember invoked! uh_id=${uh_id} email=${email}`
 		);
-
-		const prisma = new PrismaClient();
 
 		const contact = await prisma.contact.findFirst({
 			where: {
@@ -52,7 +50,6 @@ class MemberService {
 			`MemberService.createMember invoked! contact_id=${contact_id} start_date=${start_date} end_date=${end_date} membership_code_id=${membership_code_id}`
 		);
 
-		const prisma = new PrismaClient();
 		const UUID = uuidv4();
 
 		const startDateParsed = new Date(start_date);
@@ -73,7 +70,6 @@ class MemberService {
 
 	static async getMembers() {
 		logger.info("MemberService.getMembers invoked!");
-		const prisma = new PrismaClient();
 		const members = prisma.contact.findMany();
 		return members;
 	}
