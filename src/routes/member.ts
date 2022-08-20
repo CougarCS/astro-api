@@ -68,20 +68,6 @@ router.post(
 	}
 );
 
-/* GET /member/all */
-
-router.get("/all", async (req, res) => {
-	try {
-		const members = await MemberService.getMembers();
-		return res.status(200).json(members);
-	} catch (err) {
-		logger.error("MemberService.getMembers failed. Error =");
-		logger.error(err);
-	}
-
-	return res.status(500).json({ message: "Unable to load resource" });
-});
-
 /* PATCH /member/edit */
 
 router.patch(
@@ -107,5 +93,35 @@ router.patch(
 		return res.status(500).json({ message: "Unable to load resource" });
 	}
 );
+
+/* POST /member/points */
+
+// Grant a member points
+
+router.post("/points", async (req, res) => {
+	res.status(200).json({ message: "Project ASTRO API 🚀" });
+});
+
+/* GET /member/points */
+
+// Pull a member's points in a time range (or all if no time range)
+
+router.get("/points", async (req, res) => {
+	res.status(200).json({ message: "Project ASTRO API 🚀" });
+});
+
+/* GET /member/all */
+
+router.get("/all", async (req, res) => {
+	try {
+		const members = await MemberService.getMembers();
+		return res.status(200).json(members);
+	} catch (err) {
+		logger.error("MemberService.getMembers failed. Error =");
+		logger.error(err);
+	}
+
+	return res.status(500).json({ message: "Unable to load resource" });
+});
 
 export default router;

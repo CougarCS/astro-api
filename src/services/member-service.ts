@@ -1,8 +1,8 @@
-import { prisma } from "../utils/prisma";
 import { v4 as uuidv4 } from "uuid";
 
-import { updateMemberModel } from "../models/member.model";
+import { prisma } from "../utils/prisma";
 import logger from "../utils/logger/logger";
+import { updateMemberModel } from "../models/member.model";
 
 class MemberService {
 	static async isMember(uh_id = "", email = "") {
@@ -81,8 +81,6 @@ class MemberService {
 				updates
 			)}`
 		);
-
-		const prisma = new PrismaClient();
 
 		const dates: { [key: string]: Date } = {};
 		if (updates.start_date) dates.start_date = new Date(updates.start_date);
