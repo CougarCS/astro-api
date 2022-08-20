@@ -73,7 +73,7 @@ router.post(
 router.get("/all", async (req, res) => {
 	try {
 		const members = await MemberService.getMembers();
-		return res.status(200).json({ members });
+		return res.status(200).json(members);
 	} catch (err) {
 		logger.error("MemberService.getMembers failed. Error =");
 		logger.error(err);
@@ -105,7 +105,6 @@ router.patch(
 		}
 
 		return res.status(500).json({ message: "Unable to load resource" });
-	}
-);
+});
 
 export default router;
