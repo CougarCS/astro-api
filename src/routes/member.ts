@@ -105,6 +105,7 @@ router.patch(
 		}
 
 		return res.status(500).json({ message: "Unable to load resource" });
-});
+	}
+);
 
 export default router;
