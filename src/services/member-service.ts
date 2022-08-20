@@ -1,6 +1,7 @@
 import { prisma } from "../utils/prisma";
 import { v4 as uuidv4 } from "uuid";
 
+import { updateMemberModel } from "../models/member.model";
 import logger from "../utils/logger/logger";
 
 class MemberService {
@@ -72,6 +73,33 @@ class MemberService {
 		logger.info("MemberService.getMembers invoked!");
 		const members = prisma.contact.findMany();
 		return members;
+	}
+
+	static async updateMember(membership_id: string, updates: updateMemberModel) {
+		logger.info(
+			`MemberService.updateMember invoked! membership membership_id=${membership_id} updates=${JSON.stringify(
+				updates
+			)}`
+		);
+
+		const prisma = new PrismaClient();
+
+		const dates: { [key: string]: Date } = {};
+		if (updates.start_date) dates.start_date = new Date(updates.start_date);
+		if (updates.end_date) dates.end_date = new Date(updates.end_date);
+
+		const format = { ...updates, ...dates };
+
+		const membership = await prisma.membership.update({
+			where: {
+				membership_id,
+			},
+			data: {
+				...format,
+			},
+		});
+
+		return membership;
 	}
 }
 
