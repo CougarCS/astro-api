@@ -33,8 +33,52 @@ class EventService {
 		return event;
 	}
 
-	static async addAttendance() {
-		console.log("addAttendance");
+	static async checkAttendance(uh_id: string, event_id: string) {
+		const attendance = await prisma.event_attendance.findFirst({
+			where: {
+				contact: {
+					uh_id,
+				},
+				event_id,
+			},
+		});
+
+		if (attendance) {
+			return true;
+		}
+
+		return false;
+	}
+
+	static async addAttendance(uh_id: string, event_id: string, swag: boolean) {
+		logger.info(
+			`EventService.addAttendance invoked! uh_id:${uh_id} event_id=${event_id}`
+		);
+
+		const UUID = uuidv4();
+
+		const timestamp = new Date();
+
+		const contact = await prisma.contact.findFirst({
+			where: {
+				uh_id,
+			},
+			select: {
+				contact_id: true,
+			},
+		});
+
+		const attendance = await prisma.event_attendance.create({
+			data: {
+				event_attendance_id: UUID,
+				event_id: event_id,
+				contact_id: contact.contact_id,
+				timestamp: timestamp,
+				swag: swag,
+			},
+		});
+
+		return attendance;
 	}
 }
 
