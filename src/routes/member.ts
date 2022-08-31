@@ -106,9 +106,29 @@ router.post("/points", async (req, res) => {
 
 // Pull a member's points in a time range (or all if no time range)
 
-router.get("/points", async (req, res) => {
-	res.status(200).json({ message: "Project ASTRO API 🚀" });
-});
+router.get(
+	"/points",
+	query("uh_id").isString().isLength({ min: 7, max: 7 }),
+	query("start_date").optional().isString(),
+	query("end_date").optional().isString(),
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { uh_id, start_date, end_date } = req.query;
+
+		try {
+			const member_points = await MemberService.getMemberPoints(uh_id, start_date, end_date);
+			return res.status(200).json({ member_points });
+		} catch (err) {
+			logger.error("MemberService.getMemberPoints failed. Error =");
+			logger.error(err);
+		}
+
+		return res.status(500).json({ message: "Unable to load resource" });
+	});
 
 /* GET /member/all */
 

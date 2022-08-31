@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { prisma } from "../utils/prisma";
 import logger from "../utils/logger/logger";
 import { updateMemberModel } from "../models/member.model";
+import { member_point_transaction } from "@prisma/client";
 
 class MemberService {
 	static async isMember(uh_id = "", email = "") {
@@ -98,6 +99,26 @@ class MemberService {
 		});
 
 		return membership;
+	}
+
+	static async getMemberPoints(uh_id: string, start_date: string, end_date: string) {
+		const lower_bound = start_date ? new Date(start_date) : undefined;
+		const upper_bound = end_date ? new Date(end_date) : undefined;
+
+		const point_transactions = await prisma.member_point_transaction.findMany({
+			where: {
+				contact: {
+					uh_id
+				},
+				timestamp: {
+					gte: lower_bound,
+					lte: upper_bound
+				}
+			}
+		});
+
+		const member_points = point_transactions.reduce((acc: number, curr: member_point_transaction) => acc + curr.point_value, 0);
+		return member_points;
 	}
 }
 
