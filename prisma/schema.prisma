@@ -10,7 +10,7 @@ datasource db {
 model contact {
   contact_id               String                     @id @db.VarChar(36)
   uh_id                    String?                    @db.VarChar(7)
-  email                    String                     @db.VarChar(128)
+  email                    String                     @unique(map: "email") @db.VarChar(128)
   first_name               String                     @db.VarChar(64)
   last_name                String?                    @db.VarChar(64)
   phone_number             String?                    @db.VarChar(32)
@@ -40,8 +40,8 @@ model event_attendance {
   contact_id          String?  @db.VarChar(36)
   timestamp           DateTime @default(now()) @db.DateTime(0)
   swag                Boolean  @default(false)
-  contact             contact? @relation(fields: [contact_id], references: [contact_id], onDelete: NoAction, onUpdate: NoAction, map: "event_attendance_ibfk_2")
   event               event    @relation(fields: [event_id], references: [event_id], onDelete: NoAction, onUpdate: NoAction, map: "event_attendance_ibfk_1")
+  contact             contact? @relation(fields: [contact_id], references: [contact_id], onDelete: NoAction, onUpdate: NoAction, map: "event_attendance_ibfk_2")
 
   @@index([contact_id], map: "contact_id")
   @@index([event_id], map: "event_id")
@@ -89,4 +89,13 @@ model shirt_size {
   shirt_size_id String    @id @db.VarChar(16)
   message       String    @db.VarChar(64)
   contact       contact[]
+}
+
+model user {
+  user_id       String @id @db.VarChar(36)
+  email         String @unique(map: "email") @db.VarChar(64)
+  password_hash String @db.VarChar(64)
+  role          String @db.VarChar(16)
+  first_name    String @db.VarChar(64)
+  last_name     String @db.VarChar(64)
 }
