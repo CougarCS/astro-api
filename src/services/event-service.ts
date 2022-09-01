@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-
 import { prisma } from "../utils/prisma";
 import logger from "../utils/logger/logger";
+import Util from "../utils/util";
 
 class EventService {
 	static async createEvent(
@@ -15,18 +14,17 @@ class EventService {
 			`EventService.createEvent invoked! title=${title} description=${description} date=${datetime} duration=${duration} point_value=${point_value} `
 		);
 
-		const UUID = uuidv4();
-
+		const event_id = Util.generateId();
 		const formattedDatetime = new Date(datetime);
 
 		const event = prisma.event.create({
 			data: {
-				event_id: UUID,
-				title: title,
-				description: description,
+				event_id,
+				title,
+				description,
 				datetime: formattedDatetime,
-				duration: duration,
-				point_value: point_value,
+				duration,
+				point_value,
 			},
 		});
 
@@ -43,11 +41,7 @@ class EventService {
 			},
 		});
 
-		if (attendance) {
-			return true;
-		}
-
-		return false;
+		return !!attendance;
 	}
 
 	static async addAttendance(uh_id: string, event_id: string, swag: boolean) {
@@ -55,8 +49,7 @@ class EventService {
 			`EventService.addAttendance invoked! uh_id:${uh_id} event_id=${event_id}`
 		);
 
-		const UUID = uuidv4();
-
+		const event_attendance_id = Util.generateId();
 		const timestamp = new Date();
 
 		const contact = await prisma.contact.findFirst({
@@ -70,11 +63,11 @@ class EventService {
 
 		const attendance = await prisma.event_attendance.create({
 			data: {
-				event_attendance_id: UUID,
-				event_id: event_id,
+				event_attendance_id,
+				event_id,
 				contact_id: contact.contact_id,
-				timestamp: timestamp,
-				swag: swag,
+				timestamp,
+				swag,
 			},
 		});
 
