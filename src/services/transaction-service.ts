@@ -24,7 +24,7 @@ class TransactionService {
 			},
 		});
 
-		const pointTransaction = prisma.member_point_transaction.create({
+		const pointTransaction = await prisma.member_point_transaction.create({
 			data: {
 				member_point_transaction_id: transaction_id,
 				contact_id: contact.contact_id,

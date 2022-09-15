@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, query, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import TransactionService from "../services/transaction-service";
 
 import logger from "../utils/logger/logger";
@@ -29,7 +29,6 @@ router.post(
 				point_value,
 				reason
 			);
-			// console.log(transaction);
 			return res.status(200).json(transaction);
 		} catch (err) {
 			logger.error("TransactionService.createPoints failed. Error =");
