@@ -17,3 +17,6 @@ src/utils/config.ts
 
 # Windows Metadata
 Thumbs.db
+
+# Jetbrains
+.idea
