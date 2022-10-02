@@ -7,14 +7,13 @@ import logger from "../utils/logger/logger";
 
 const router = Router();
 
-/* GET /member/status?uh_id=||email= */
+/* GET /members?uh_id=||email= */
+/* GET /members */
 
 router.get(
-	"/status",
+	"/",
 	query("uh_id").optional().isString().isLength({ min: 7, max: 7 }),
 	query("email").optional().isEmail(),
-	query("uh_id").if(query("email").not().exists()).exists(),
-	query("email").if(query("uh_id").not().exists()).exists(),
 	async (req, res) => {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -23,11 +22,23 @@ router.get(
 
 		const { uh_id, email } = req.query;
 
+		if (uh_id || email) {
+			try {
+				const membership = await MemberService.getMember(uh_id, email);
+				return res.status(200).json({ membership });
+			} catch (err) {
+				logger.error("MemberService.getMember failed. Error =");
+				logger.error(err);
+			}
+
+			return res.status(500).json({ message: "Unable to load resource" });
+		}
+
 		try {
-			const membership = await MemberService.isMember(uh_id, email);
-			return res.status(200).json({ membership });
+			const members = await MemberService.getMembers();
+			return res.status(200).json(members);
 		} catch (err) {
-			logger.error("MemberService.isMember failed. Error =");
+			logger.error("MemberService.getMembers failed. Error =");
 			logger.error(err);
 		}
 
@@ -35,10 +46,10 @@ router.get(
 	}
 );
 
-/* POST /member/create */
+/* POST /members */
 
 router.post(
-	"/create",
+	"/",
 	body("contact_id").isString().notEmpty(),
 	body("start_date").isString().notEmpty(),
 	body("end_date").isString().notEmpty(),
@@ -68,10 +79,10 @@ router.post(
 	}
 );
 
-/* PATCH /member/edit */
+/* PATCH /members */
 
 router.patch(
-	"/edit",
+	"/",
 	body("membership_id").isString().isLength({ min: 36, max: 36 }),
 	body("updates").exists(),
 	async (req, res) => {
@@ -94,7 +105,7 @@ router.patch(
 	}
 );
 
-/* GET /member/points */
+/* GET /members/points */
 
 // Pull a member's points in a time range (or all if no time range)
 
@@ -127,18 +138,32 @@ router.get(
 	}
 );
 
-/* GET /member/all */
+/* GET /members/status?uh_id=||email= */
 
-router.get("/all", async (req, res) => {
-	try {
-		const members = await MemberService.getMembers();
-		return res.status(200).json(members);
-	} catch (err) {
-		logger.error("MemberService.getMembers failed. Error =");
-		logger.error(err);
+router.get(
+	"/status",
+	query("uh_id").optional().isString().isLength({ min: 7, max: 7 }),
+	query("email").optional().isEmail(),
+	query("uh_id").if(query("email").not().exists()).exists(),
+	query("email").if(query("uh_id").not().exists()).exists(),
+	async (req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
+
+		const { uh_id, email } = req.query;
+
+		try {
+			const membership = await MemberService.isMember(uh_id, email);
+			return res.status(200).json({ membership });
+		} catch (err) {
+			logger.error("MemberService.isMember failed. Error =");
+			logger.error(err);
+		}
+
+		return res.status(500).json({ message: "Unable to load resource" });
 	}
-
-	return res.status(500).json({ message: "Unable to load resource" });
-});
+);
 
 export default router;

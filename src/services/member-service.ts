@@ -35,9 +35,6 @@ class MemberService {
 
 		return {
 			status,
-			first_name: contact.first_name,
-			last_name: contact.last_name,
-			shirt_size: contact.shirt_size_id,
 			start_date: membership.start_date,
 			end_date: membership.end_date,
 		};
@@ -68,6 +65,43 @@ class MemberService {
 		});
 
 		return membership;
+	}
+
+	static async getMember(uh_id = "", email = "") {
+		logger.info(
+			`MemberService.getMember invoked! uh_id=${uh_id} email=${email}`
+		);
+
+		const contact = await prisma.contact.findFirst({
+			where: {
+				OR: [{ uh_id }, { email }],
+			},
+		});
+
+		if (!contact) return { status: false };
+
+		const membership = await prisma.membership.findFirst({
+			where: { contact_id: contact.contact_id },
+			orderBy: { start_date: "desc" },
+		});
+
+		if (!membership)
+			return {
+				status: false,
+				first_name: contact.first_name,
+				last_name: contact.last_name,
+			};
+
+		const status = new Date(membership.end_date) > new Date();
+
+		return {
+			status,
+			first_name: contact.first_name,
+			last_name: contact.last_name,
+			shirt_size: contact.shirt_size_id,
+			start_date: membership.start_date,
+			end_date: membership.end_date,
+		};
 	}
 
 	static async getMembers() {

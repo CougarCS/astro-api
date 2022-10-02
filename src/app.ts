@@ -4,8 +4,8 @@ import cors from "cors";
 import httpLogger from "./utils/logger/http-logger";
 
 import indexRoute from "./routes/index";
-import memberRoute from "./routes/member";
-import eventRoute from "./routes/event";
+import membersRoute from "./routes/members";
+import eventsRoute from "./routes/events";
 import transactionsRoute from "./routes/transactions";
 import contactsRoute from "./routes/contacts";
 import authRoute from "./routes/auth";
@@ -19,8 +19,8 @@ app.use(httpLogger);
 
 // Routes
 app.use("/", indexRoute);
-app.use("/member", memberRoute);
-app.use("/event", eventRoute);
+app.use("/members", membersRoute);
+app.use("/events", eventsRoute);
 app.use("/transactions", transactionsRoute);
 app.use("/contacts", contactsRoute);
 app.use("/auth", authRoute);
