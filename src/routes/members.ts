@@ -3,7 +3,7 @@ import { body, query, validationResult } from "express-validator";
 
 import MemberService from "../services/member-service";
 
-import logger from "../utils/logger/logger";
+// import logger from "../utils/logger/logger";
 
 const router = Router();
 

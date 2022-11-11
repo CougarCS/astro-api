@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 
-import logger from "../utils/logger/logger";
+// import logger from "../utils/logger/logger";
 import AuthUtil from "../utils/auth-util";
 import { EMAIL_MAX, PASSWORD_LENGTH } from "../utils/config";
 

@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma";
-import logger from "../utils/logger/logger";
+// import logger from "../utils/logger/logger";
 import Util from "../utils/util";
 
 class EventService {
@@ -10,7 +10,7 @@ class EventService {
 		duration: number,
 		point_value: number
 	) {
-		logger.info(
+		console.info(
 			`EventService.createEvent invoked! title=${title} description=${description} date=${datetime} duration=${duration} point_value=${point_value} `
 		);
 
@@ -45,7 +45,7 @@ class EventService {
 	}
 
 	static async addAttendance(uh_id: string, event_id: string, swag: boolean) {
-		logger.info(
+		console.info(
 			`EventService.addAttendance invoked! uh_id:${uh_id} event_id=${event_id}`
 		);
 
