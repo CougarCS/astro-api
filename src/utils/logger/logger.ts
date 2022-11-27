@@ -22,19 +22,7 @@ const logger = createLogger({
 		format.timestamp({ format: "MM-DD-YYYY hh:mm:ss" }),
 		winston.format.json()
 	),
-	transports: [
-		new transports.File({
-			...options.file,
-			level: "info",
-			filename: "./logs/info.log",
-		}),
-		new transports.File({
-			...options.file,
-			level: "error",
-			filename: "./logs/error.log",
-		}),
-		new transports.Console(options.console),
-	],
+	transports: [new transports.Console(options.console)],
 	exitOnError: false,
 });
 
