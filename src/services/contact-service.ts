@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma";
-// import logger from "../utils/logger/logger";
+import logger from "../utils/logger/logger";
 import Util from "../utils/util";
 
 class ContactService {
@@ -21,7 +21,7 @@ class ContactService {
 		phone_number: string,
 		shirt_size_id: string
 	) {
-		console.info(
+		logger.info(
 			`ContactService.createContact invoked! uh_id:${uh_id} email=${email} first_name=${first_name} last_name=${last_name} phone_number=${phone_number} shirt_size_id=${shirt_size_id}`
 		);
 

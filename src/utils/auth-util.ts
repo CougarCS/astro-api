@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { sign, verify } from "jsonwebtoken";
 
 import { TOKEN_EXPIRATION } from "./config";
-// import logger from "./logger/logger";
+import logger from "./logger/logger";
 import { TokenPayloadModel } from "../models/auth.model";
 import AuthService from "../services/auth-service";
 
@@ -33,13 +33,13 @@ class AuthUtil {
 
 		try {
 			const decoded = verify(token, secret) as TokenPayloadModel;
-			console.info(
+			logger.info(
 				`Token verified. Requestor = ${decoded.user.first_name} ${decoded.user.last_name}`
 			);
 			req.body.auth_user_id = decoded.user.user_id;
 			req.body.auth_role = decoded.user.role;
 		} catch (err) {
-			console.info(`Token verification failed. Error = ${JSON.stringify(err)}`);
+			logger.info(`Token verification failed. Error = ${JSON.stringify(err)}`);
 			return res.sendStatus(401);
 		}
 

@@ -1,5 +1,5 @@
 import { prisma } from "../utils/prisma";
-// import logger from "../utils/logger/logger";
+import logger from "../utils/logger/logger";
 import Util from "../utils/util";
 
 class TransactionService {
@@ -8,7 +8,7 @@ class TransactionService {
 		point_value: number,
 		reason: string
 	) {
-		console.info(
+		logger.info(
 			`TransactionService.createPoints invoked! uh_id=${uh_id} point_value=${point_value} reason=${reason}`
 		);
 

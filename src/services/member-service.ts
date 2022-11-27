@@ -2,12 +2,12 @@ import { member_point_transaction } from "@prisma/client";
 
 import { prisma } from "../utils/prisma";
 import Util from "../utils/util";
-// import logger from "../utils/logger/logger";
+import logger from "../utils/logger/logger";
 import { updateMemberModel } from "../models/member.model";
 
 class MemberService {
 	static async isMember(uh_id = "", email = "") {
-		console.info(
+		logger.info(
 			`MemberService.isMember invoked! uh_id=${uh_id} email=${email}`
 		);
 
@@ -46,7 +46,7 @@ class MemberService {
 		end_date: string,
 		membership_code_id: string
 	) {
-		console.info(
+		logger.info(
 			`MemberService.createMember invoked! contact_id=${contact_id} start_date=${start_date} end_date=${end_date} membership_code_id=${membership_code_id}`
 		);
 
@@ -68,7 +68,7 @@ class MemberService {
 	}
 
 	static async getMember(uh_id = "", email = "") {
-		console.info(
+		logger.info(
 			`MemberService.getMember invoked! uh_id=${uh_id} email=${email}`
 		);
 
@@ -105,13 +105,13 @@ class MemberService {
 	}
 
 	static async getMembers() {
-		console.info("MemberService.getMembers invoked!");
+		logger.info("MemberService.getMembers invoked!");
 		const members = prisma.contact.findMany();
 		return members;
 	}
 
 	static async updateMember(membership_id: string, updates: updateMemberModel) {
-		console.info(
+		logger.info(
 			`MemberService.updateMember invoked! membership membership_id=${membership_id} updates=${JSON.stringify(
 				updates
 			)}`

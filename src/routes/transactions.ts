@@ -2,7 +2,7 @@ import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import TransactionService from "../services/transaction-service";
 
-// import logger from "../utils/logger/logger";
+import logger from "../utils/logger/logger";
 
 const router = Router();
 
